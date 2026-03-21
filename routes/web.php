@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\WorkshopController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\WaitingListController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -18,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:employee')->group(function () {
         Route::post('workshops/{workshop}/register', [RegistrationController::class, 'store'])->name('workshops.register');
         Route::delete('workshops/{workshop}/register', [RegistrationController::class, 'destroy'])->name('workshops.unregister');
+        Route::post('workshops/{workshop}/waiting-list', [WaitingListController::class, 'store'])->name('workshops.waiting-list.store');
     });
 
     Route::middleware('role:admin')->group(function () {
