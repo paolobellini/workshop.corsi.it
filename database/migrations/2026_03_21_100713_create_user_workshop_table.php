@@ -12,8 +12,8 @@ return new class extends Migration
     {
         Schema::create('user_workshop', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('workshop_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('workshop_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
 
             $table->unique(['workshop_id', 'user_id']);
