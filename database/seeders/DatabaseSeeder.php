@@ -12,11 +12,18 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Paolo Bellini',
             'email' => 'paolo@bellini.one',
         ]);
 
         $user->assignRole(Roles::Admin);
+
+        $employee = User::factory()->create([
+            'name' => 'John Doe',
+            'email' => 'doe@example.com',
+        ]);
+
+        $user->assignRole(Roles::Employee);
     }
 }
