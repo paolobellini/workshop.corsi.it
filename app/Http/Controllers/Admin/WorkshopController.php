@@ -36,6 +36,13 @@ final class WorkshopController extends Controller
         ]);
     }
 
+    public function show(Workshop $workshop): Response
+    {
+        return Inertia::render('workshops/Show', [
+            'workshop' => WorkshopResource::make($workshop->loadCount('registrations')),
+        ]);
+    }
+
     public function store(StoreWorkshopRequest $request, StoreWorkshopAction $action): RedirectResponse
     {
         /** @var array<string, mixed> $validated */
