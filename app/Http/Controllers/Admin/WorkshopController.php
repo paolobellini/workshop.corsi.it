@@ -39,7 +39,7 @@ final class WorkshopController extends Controller
     public function show(Workshop $workshop): Response
     {
         return Inertia::render('workshops/Show', [
-            'workshop' => WorkshopResource::make($workshop->loadCount('registrations')),
+            'workshop' => WorkshopResource::make($workshop->load('registrations')->loadCount('registrations')),
         ]);
     }
 

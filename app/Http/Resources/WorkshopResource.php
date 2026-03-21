@@ -19,7 +19,7 @@ final class WorkshopResource extends JsonResource
         /** @var Workshop $workshop */
         $workshop = $this->resource;
 
-        return [
+        $data = [
             'id' => $workshop->id,
             'title' => $workshop->title,
             'description' => $workshop->description,
@@ -31,5 +31,11 @@ final class WorkshopResource extends JsonResource
             'created_at' => $workshop->created_at,
             'updated_at' => $workshop->updated_at,
         ];
+
+        if ($workshop->relationLoaded('registrations')) {
+            $data['registrations'] = UserResource::collection($workshop->registrations);
+        }
+
+        return $data;
     }
 }
