@@ -13,7 +13,9 @@ Route::inertia('/', 'Welcome', [
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
-    Route::post('workshops', [WorkshopController::class, 'store'])->name('workshops.store');
+    Route::middleware('role:admin')->group(function () {
+        Route::post('workshops', [WorkshopController::class, 'store'])->name('workshops.store');
+    });
 });
 
 require __DIR__.'/settings.php';
