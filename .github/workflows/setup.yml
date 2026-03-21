@@ -1,0 +1,39 @@
+name: Setup
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        required: true
+        type: string
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v6
+
+      - name: setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.5
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, xdebug
+          coverage: xdebug
+
+      - name: cache composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('api/composer.lock') }}
+          restore-keys: composer-
+
+      - name: install dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: prepare environment
+        run: cp ${{ github.workspace }}/.env.example .env
+
+      - name: run command
+        run: ${{ inputs.command }}

@@ -16,6 +16,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
         "nunomaduro/essentials": "^1.2",
+        "predis/predis": "^3.4",
         "spatie/laravel-permission": "^7.2"
     },
     "require-dev": {
