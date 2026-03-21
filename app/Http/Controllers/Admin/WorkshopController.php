@@ -8,13 +8,30 @@ use App\Actions\DestroyWorkshopAction;
 use App\Actions\StoreWorkshopAction;
 use App\Actions\UpdateWorkshopAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\IndexWorkshopRequest;
 use App\Http\Requests\Admin\StoreWorkshopRequest;
 use App\Http\Requests\Admin\UpdateWorkshopRequest;
+use App\Http\Resources\WorkshopResource;
 use App\Models\Workshop;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 final class WorkshopController extends Controller
 {
+    public function index(IndexWorkshopRequest $request): Response
+    {
+        $workshops = Workshop::query()
+            ->withCount('registrations')
+            ->latest('starts_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        return Inertia::render('admin/workshops/Index', [
+            'workshops' => WorkshopResource::collection($workshops),
+        ]);
+    }
+
     public function store(StoreWorkshopRequest $request, StoreWorkshopAction $action): RedirectResponse
     {
         /** @var array<string, mixed> $validated */
