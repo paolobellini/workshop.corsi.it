@@ -2,19 +2,15 @@ name: Checks
 on:
   push:
     branches:
-      - beta
+      - develop
       - main
-    paths:
-      - 'api/**'
   pull_request:
     branches:
       - main
-    paths:
-      - 'api/**'
 
 jobs:
   analyse:
     name: analyse
-    uses: ./.github/workflows/setup-api.yml
+    uses: ./.github/workflows/setup.yml
     with:
       command: composer check
