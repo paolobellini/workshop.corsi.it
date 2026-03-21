@@ -15,7 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
     Route::get('workshops', [WorkshopController::class, 'index'])->name('workshops.index');
-    Route::post('workshops/{workshop}/register', [RegistrationController::class, 'store'])->name('workshops.register');
+    Route::middleware('role:employee')->group(function () {
+        Route::post('workshops/{workshop}/register', [RegistrationController::class, 'store'])->name('workshops.register');
+    });
 
     Route::middleware('role:admin')->group(function () {
         Route::get('workshops/{workshop}', [WorkshopController::class, 'show'])->name('workshops.show');
