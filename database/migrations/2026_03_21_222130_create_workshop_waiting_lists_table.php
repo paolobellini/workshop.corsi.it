@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('workshop_waiting_lists', function (Blueprint $table) {
+        Schema::create('waiting_lists', function (Blueprint $table) {
             $table->id();
             $table->foreignId('workshop_id')->constrained();
             $table->foreignId('user_id')->constrained();
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('workshop_waiting_lists');
+        Schema::dropIfExists('waiting_lists');
     }
 };
