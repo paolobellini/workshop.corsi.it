@@ -15,6 +15,7 @@ final class DestroyWorkshopAction
     {
         DB::transaction(function () use ($workshop) {
             $this->unregisterUserAction->handle($workshop);
+            $workshop->waitingList()->delete();
             $workshop->delete();
         });
     }
