@@ -4,34 +4,44 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Models\User;
+use App\Models\WaitingList;
 use App\Models\Workshop;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 final class PromoteFromWaitingListAction
 {
-    public function __construct(private RemoveFromWaitingListAction $removeAction) {}
+    public function __construct(
+        private RemoveFromWaitingListAction $removeFromWaitingListAction,
+        private RegisterUserAction $registerUserAction,
+    ) {}
 
     public function handle(Workshop $workshop): void
     {
-        $user = $this->nextInLine($workshop);
-
-        if ($user === null) {
+        if ($workshop->is_full) {
             return;
         }
 
-        DB::transaction(function () use ($workshop, $user): void {
-            $this->removeAction->handle($workshop, $user);
-            $workshop->registrations()->attach($user);
-        });
+        foreach ($workshop->waitingList as $entry) {
+            if ($this->tryPromote($workshop, $entry)) {
+                return;
+            }
+        }
     }
 
-    private function nextInLine(Workshop $workshop): ?User
+    private function tryPromote(Workshop $workshop, WaitingList $entry): bool
     {
-        if ($workshop->is_full) {
-            return null;
+        try {
+            DB::transaction(function () use ($workshop, $entry): void {
+                $this->removeFromWaitingListAction->handle($workshop, $entry->user);
+                $this->registerUserAction->handle($workshop, $entry->user);
+            });
+        } catch (ValidationException) { // @phpstan-ignore catch.neverThrown
+            $this->removeFromWaitingListAction->handle($workshop, $entry->user);
+
+            return false;
         }
 
-        return $workshop->waitingList()->first()?->user;
+        return true;
     }
 }
