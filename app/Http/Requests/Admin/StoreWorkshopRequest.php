@@ -4,11 +4,22 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\Roles;
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 final class StoreWorkshopRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        return $user?->hasRole(Roles::Admin) ?? false;
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */

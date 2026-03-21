@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Enums\Roles;
 use App\Http\Requests\Admin\StoreWorkshopRequest;
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Facades\Validator;
 
 function validWorkshopData(array $overrides = []): array
@@ -35,4 +38,26 @@ it('fails when ends_at is before starts_at', function () {
     ]), (new StoreWorkshopRequest)->rules());
 
     expect($validator->fails())->toBeTrue();
+});
+
+it('authorizes admin users', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole(Roles::Admin);
+
+    $this->actingAs($admin);
+
+    expect((new StoreWorkshopRequest)->authorize())->toBeTrue();
+});
+
+it('denies non-admin users', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $employee = User::factory()->create();
+    $employee->assignRole(Roles::Employee);
+
+    $this->actingAs($employee);
+
+    expect((new StoreWorkshopRequest)->authorize())->toBeFalse();
 });

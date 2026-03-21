@@ -13,8 +13,10 @@ final class WorkshopController extends Controller
 {
     public function store(StoreWorkshopRequest $request, StoreWorkshopAction $action): RedirectResponse
     {
-        $action->handle($request->validated());
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
+        $action->handle($validated);
 
-        return back()->with('success', 'Workshop created successfully.');
+        return back()->with('success', 'Workshop creato con successo.');
     }
 }

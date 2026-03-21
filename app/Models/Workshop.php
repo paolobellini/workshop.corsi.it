@@ -57,17 +57,11 @@ final class Workshop extends Model
         return $this->belongsToMany(User::class)->withTimestamps();
     }
 
-    /**
-     * @return Attribute<int, never>
-     */
     protected function availableSeats(): Attribute
     {
         return Attribute::get(fn (): int => $this->capacity - $this->registrations()->count());
     }
 
-    /**
-     * @return Attribute<bool, never>
-     */
     protected function isFull(): Attribute
     {
         return Attribute::get(fn (): bool => $this->available_seats <= 0);
