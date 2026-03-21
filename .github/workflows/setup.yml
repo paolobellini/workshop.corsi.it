@@ -29,8 +29,21 @@ jobs:
           key: composer-${{ hashFiles('composer.lock') }}
           restore-keys: composer-
 
-      - name: install dependencies
+      - name: install composer dependencies
         run: composer install --prefer-dist --no-interaction
+
+      - name: cache npm dependencies
+        uses: actions/cache@v5
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+
+      - name: install npm dependencies
+        run: npm ci
+
+      - name: build frontend
+        run: npm run build
 
       - name: prepare environment
         run: |
