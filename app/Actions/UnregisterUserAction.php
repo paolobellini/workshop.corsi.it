@@ -9,8 +9,14 @@ use App\Models\Workshop;
 
 final class UnregisterUserAction
 {
+    public function __construct(private PromoteFromWaitingListAction $promoteAction) {}
+
     public function handle(Workshop $workshop, ?User $user = null): void
     {
-        $workshop->registrations()->detach($user);
+        $detached = $workshop->registrations()->detach($user);
+
+        if ($detached > 0 && $user !== null) {
+            $this->promoteAction->handle($workshop);
+        }
     }
 }
