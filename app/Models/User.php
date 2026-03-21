@@ -9,6 +9,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -27,6 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Workshop> $workshops
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, WaitingList> $waitingLists
  */
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 final class User extends Authenticatable
@@ -60,5 +62,13 @@ final class User extends Authenticatable
     public function workshops(): BelongsToMany
     {
         return $this->belongsToMany(Workshop::class)->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<WaitingList, $this>
+     */
+    public function waitingLists(): HasMany
+    {
+        return $this->hasMany(WaitingList::class);
     }
 }

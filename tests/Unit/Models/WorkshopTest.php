@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\WaitingList;
 use App\Models\Workshop;
 
 it('has the correct visible keys', function () {
@@ -87,4 +88,26 @@ it('filters workshops by ending before scope', function () {
     $results = Workshop::query()->endingBefore('2026-03-15')->get();
 
     expect($results)->toHaveCount(2);
+});
+
+it('has waiting list in FIFO order', function () {
+    $workshop = Workshop::factory()->create();
+    $first = User::factory()->create();
+    $second = User::factory()->create();
+
+    WaitingList::query()->create([
+        'workshop_id' => $workshop->id,
+        'user_id' => $first->id,
+        'created_at' => '2026-04-01 10:00:00',
+    ]);
+
+    WaitingList::query()->create([
+        'workshop_id' => $workshop->id,
+        'user_id' => $second->id,
+        'created_at' => '2026-04-01 11:00:00',
+    ]);
+
+    expect($workshop->waitingList)->toHaveCount(2)
+        ->and($workshop->waitingList->first()->user_id)->toBe($first->id)
+        ->and($workshop->waitingList->last()->user_id)->toBe($second->id);
 });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\Roles;
 use App\Models\User;
+use App\Models\WaitingList;
 use App\Models\Workshop;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -33,9 +34,14 @@ test('employees cannot delete a workshop', function () {
 test('admins can delete a workshop', function () {
     $user = User::factory()->create()->assignRole(Roles::Admin);
     $workshop = Workshop::factory()->create();
+    $registeredUsers = User::factory()->count(2)->create();
+    $workshop->registrations()->attach($registeredUsers);
+    WaitingList::factory()->count(2)->create(['workshop_id' => $workshop->id]);
 
     $response = $this->actingAs($user)->delete(route('workshops.destroy', $workshop));
 
     $response->assertRedirect();
     $this->assertDatabaseMissing(Workshop::class, ['id' => $workshop->id]);
+    $this->assertDatabaseEmpty('user_workshop');
+    $this->assertDatabaseEmpty('waiting_lists');
 });

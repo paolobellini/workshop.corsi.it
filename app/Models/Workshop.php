@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int $available_seats
  * @property-read bool $is_full
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $registrations
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, WaitingList> $waitingList
  */
 final class Workshop extends Model
 {
@@ -60,6 +62,14 @@ final class Workshop extends Model
     }
 
     /**
+     * @return HasMany<WaitingList, $this>
+     */
+    public function waitingList(): HasMany
+    {
+        return $this->hasMany(WaitingList::class)->oldest(); // @phpstan-ignore return.type
+    }
+
+    /**
      * @param  Builder<self>  $query
      */
     #[Scope]
@@ -84,6 +94,16 @@ final class Workshop extends Model
     protected function endingBefore(Builder $query, string $date): void
     {
         $query->where('ends_at', '<=', $date.' 23:59:59');
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function overlapping(Builder $query, self $workshop): void
+    {
+        $query->where('starts_at', '<', $workshop->ends_at)
+            ->where('ends_at', '>', $workshop->starts_at);
     }
 
     protected function availableSeats(): Attribute
