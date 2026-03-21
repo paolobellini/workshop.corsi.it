@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\DestroyWorkshopAction;
 use App\Actions\StoreWorkshopAction;
 use App\Actions\UpdateWorkshopAction;
 use App\Http\Controllers\Controller;
@@ -30,5 +31,12 @@ final class WorkshopController extends Controller
         $action->handle($workshop, $validated);
 
         return back()->with('success', 'Workshop aggiornato con successo.');
+    }
+
+    public function destroy(Workshop $workshop, DestroyWorkshopAction $action): RedirectResponse
+    {
+        $action->handle($workshop);
+
+        return back()->with('success', 'Workshop eliminato con successo.');
     }
 }

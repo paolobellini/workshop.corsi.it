@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::post('workshops', [WorkshopController::class, 'store'])->name('workshops.store');
         Route::put('workshops/{workshop}', [WorkshopController::class, 'update'])->name('workshops.update');
+        Route::delete('workshops/{workshop}', [WorkshopController::class, 'destroy'])->name('workshops.destroy');
     });
 });
 
