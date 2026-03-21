@@ -86,6 +86,16 @@ final class Workshop extends Model
         $query->where('ends_at', '<=', $date.' 23:59:59');
     }
 
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function overlapping(Builder $query, self $workshop): void
+    {
+        $query->where('starts_at', '<', $workshop->ends_at)
+            ->where('ends_at', '>', $workshop->starts_at);
+    }
+
     protected function availableSeats(): Attribute
     {
         return Attribute::get(fn (): int => $this->capacity - $this->registrations()->count());
