@@ -6,6 +6,8 @@ namespace App\Models;
 
 use Carbon\CarbonImmutable;
 use Database\Factories\WorkshopFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,6 +57,33 @@ final class Workshop extends Model
     public function registrations(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function search(Builder $query, string $search): void
+    {
+        $query->where('title', 'like', "%{$search}%");
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function startingFrom(Builder $query, string $date): void
+    {
+        $query->whereDate('starts_at', '>=', $date);
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function endingBefore(Builder $query, string $date): void
+    {
+        $query->where('ends_at', '<=', $date.' 23:59:59');
     }
 
     protected function availableSeats(): Attribute

@@ -22,12 +22,15 @@ final class WorkshopController extends Controller
     public function index(IndexWorkshopRequest $request): Response
     {
         $workshops = Workshop::query()
+            ->when($request->validated('search'), fn ($query, $search) => $query->search($search))
+            ->when($request->validated('start_date'), fn ($query, $date) => $query->startingFrom($date))
+            ->when($request->validated('end_date'), fn ($query, $date) => $query->endingBefore($date))
             ->withCount('registrations')
             ->latest('starts_at')
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('admin/workshops/Index', [
+        return Inertia::render('workshops/Index', [
             'workshops' => WorkshopResource::collection($workshops),
         ]);
     }
