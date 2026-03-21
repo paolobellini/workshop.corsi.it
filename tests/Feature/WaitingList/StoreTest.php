@@ -17,6 +17,7 @@ test('guest cannot join the waiting list', function () {
     $response = $this->post(route('workshops.waiting-list.store', $workshop));
 
     $response->assertRedirect(route('login'));
+    $this->assertDatabaseCount('waiting_lists', 0);
 });
 
 test('employee can join the waiting list for a full workshop', function () {

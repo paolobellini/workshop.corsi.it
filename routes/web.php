@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('workshops/{workshop}/register', [RegistrationController::class, 'store'])->name('workshops.register');
         Route::delete('workshops/{workshop}/register', [RegistrationController::class, 'destroy'])->name('workshops.unregister');
         Route::post('workshops/{workshop}/waiting-list', [WaitingListController::class, 'store'])->name('workshops.waiting-list.store');
+        Route::delete('workshops/{workshop}/waiting-list', [WaitingListController::class, 'destroy'])->name('workshops.waiting-list.destroy');
     });
 
     Route::middleware('role:admin')->group(function () {
