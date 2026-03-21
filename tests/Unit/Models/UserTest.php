@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\WaitingList;
 use App\Models\Workshop;
 
 it('has the correct visible keys', function () {
@@ -26,4 +27,16 @@ it('has workshops', function () {
     $user->workshops()->attach($workshops);
 
     expect($user->workshops)->toHaveCount(2);
+});
+
+it('has waiting lists', function () {
+    $user = User::factory()->create();
+    $workshop = Workshop::factory()->create();
+
+    WaitingList::query()->create([
+        'workshop_id' => $workshop->id,
+        'user_id' => $user->id,
+    ]);
+
+    expect($user->waitingLists)->toHaveCount(1);
 });

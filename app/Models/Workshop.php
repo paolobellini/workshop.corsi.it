@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int $available_seats
  * @property-read bool $is_full
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $registrations
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, WaitingList> $waitingList
  */
 final class Workshop extends Model
 {
@@ -57,6 +59,14 @@ final class Workshop extends Model
     public function registrations(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<WaitingList, $this>
+     */
+    public function waitingList(): HasMany
+    {
+        return $this->hasMany(WaitingList::class)->oldest(); // @phpstan-ignore return.type
     }
 
     /**
