@@ -21,6 +21,7 @@ test('authenticated users can view workshops', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('workshops/Index', false)
         ->has('workshops.data', 3)
+        ->has('filters')
     );
 });
 
@@ -35,6 +36,7 @@ test('it filters workshops by search', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('workshops/Index', false)
         ->has('workshops.data', 1)
+        ->where('filters.search', 'Laravel')
     );
 });
 
@@ -49,6 +51,7 @@ test('it filters workshops by start date', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('workshops/Index', false)
         ->has('workshops.data', 1)
+        ->where('filters.start_date', '2026-04-15')
     );
 });
 
@@ -63,5 +66,6 @@ test('it filters workshops by end date', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('workshops/Index', false)
         ->has('workshops.data', 1)
+        ->where('filters.end_date', '2026-04-15')
     );
 });

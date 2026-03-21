@@ -3,3 +3,14 @@ parameters:
         - app/
 
     level: 9
+
+    ignoreErrors:
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<.*>::(search|startingFrom|endingBefore)\(\)#'
+            reportUnmatched: false
+        -
+            message: '#Cannot call method when\(\) on mixed#'
+            reportUnmatched: false
+        -
+            identifier: argument.templateType
+            reportUnmatched: false

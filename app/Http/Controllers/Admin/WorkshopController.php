@@ -32,6 +32,7 @@ final class WorkshopController extends Controller
 
         return Inertia::render('workshops/Index', [
             'workshops' => WorkshopResource::collection($workshops),
+            'filters' => $request->only(['search', 'start_date', 'end_date']),
         ]);
     }
 
