@@ -17,13 +17,13 @@ final class DatabaseSeeder extends Seeder
             'email' => 'paolo@bellini.one',
         ]);
 
-        $user->assignRole(Roles::Admin);
+        $admin->assignRole(Roles::Admin);
 
         $employee = User::factory()->create([
             'name' => 'John Doe',
             'email' => 'doe@example.com',
         ]);
 
-        $user->assignRole(Roles::Employee);
+        $employee->assignRole(Roles::Employee);
     }
 }
