@@ -20,7 +20,10 @@ final class NoWorkshopOverlap implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $overlapping = Workshop::query()
-            ->whereRelation('registrations', 'users.id', $this->user->id)
+            ->where(fn (\Illuminate\Contracts\Database\Query\Builder $query) => $query
+                ->whereRelation('registrations', 'users.id', $this->user->id)
+                ->orWhereRelation('waitingList', 'user_id', $this->user->id)
+            )
             ->overlapping($value)
             ->first();
 

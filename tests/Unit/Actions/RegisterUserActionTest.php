@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Actions\RegisterUserAction;
 use App\Models\User;
+use App\Models\WaitingList;
 use App\Models\Workshop;
 use Illuminate\Validation\ValidationException;
 
@@ -25,6 +26,34 @@ it('prevents registration when user has an overlapping workshop', function () {
         'ends_at' => '2026-04-01 14:00:00',
     ]);
     $user->workshops()->attach($existing);
+
+    $overlapping = Workshop::factory()->create([
+        'starts_at' => '2026-04-01 13:00:00',
+        'ends_at' => '2026-04-01 17:00:00',
+    ]);
+
+    try {
+        resolve(RegisterUserAction::class)->handle($overlapping, $user);
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('workshop');
+
+        return;
+    }
+
+    $this->fail('Expected ValidationException was not thrown.');
+});
+
+it('prevents registration when user is on the waiting list for an overlapping workshop', function () {
+    $user = User::factory()->create();
+
+    $waitlisted = Workshop::factory()->create([
+        'starts_at' => '2026-04-01 10:00:00',
+        'ends_at' => '2026-04-01 14:00:00',
+    ]);
+    WaitingList::factory()->create([
+        'workshop_id' => $waitlisted->id,
+        'user_id' => $user->id,
+    ]);
 
     $overlapping = Workshop::factory()->create([
         'starts_at' => '2026-04-01 13:00:00',
