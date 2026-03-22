@@ -100,6 +100,15 @@ final class Workshop extends Model
      * @param  Builder<self>  $query
      */
     #[Scope]
+    protected function today(Builder $query): void
+    {
+        $query->whereDate('starts_at', today());
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
     protected function overlapping(Builder $query, self $workshop): void
     {
         $query->where('starts_at', '<', $workshop->ends_at)

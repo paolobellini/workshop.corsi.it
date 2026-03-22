@@ -6,7 +6,7 @@ parameters:
 
     ignoreErrors:
         -
-            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<.*>::(search|startingFrom|endingBefore|overlapping)\(\)#'
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<.*>::(search|startingFrom|endingBefore|today|overlapping)\(\)#'
             reportUnmatched: false
         -
             message: '#Cannot call method when\(\) on mixed#'
