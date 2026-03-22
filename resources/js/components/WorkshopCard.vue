@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { useDateFormat } from '@vueuse/core';
 import { Clock, Pencil, Trash2, UserPlus } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +13,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { show } from '@/routes/workshops';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { destroy, show } from '@/routes/workshops';
 import type { Workshop } from '@/types';
 
 const props = defineProps<{
@@ -21,6 +23,19 @@ const props = defineProps<{
 
 const startsAt = useDateFormat(props.workshop.starts_at, 'DD/MM/YYYY HH:mm');
 const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
+
+const showDeleteDialog = ref(false);
+const deleting = ref(false);
+
+function confirmDelete() {
+    deleting.value = true;
+    router.delete(destroy.url(props.workshop.id), {
+        onFinish: () => {
+            deleting.value = false;
+            showDeleteDialog.value = false;
+        },
+    });
+}
 </script>
 
 <template>
@@ -78,7 +93,11 @@ const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
                     <span class="sr-only">Modifica</span>
                     <Pencil class="size-4" />
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    @click="showDeleteDialog = true"
+                >
                     <span class="sr-only">Elimina</span>
                     <Trash2 class="size-4" />
                 </Button>
@@ -95,4 +114,13 @@ const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
             </Button>
         </CardFooter>
     </Card>
+
+    <ConfirmDialog
+        v-model:open="showDeleteDialog"
+        title="Elimina Workshop"
+        :description="`Sei sicuro di voler eliminare &quot;${workshop.title}&quot;? Questa azione non può essere annullata.`"
+        confirm-label="Elimina"
+        :processing="deleting"
+        @confirm="confirmDelete"
+    />
 </template>
