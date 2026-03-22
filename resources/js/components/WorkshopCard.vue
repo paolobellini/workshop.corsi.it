@@ -133,7 +133,7 @@ function confirmDelete() {
                 </Button>
             </div>
             <Button
-                v-if="isEmployee"
+                v-if="isEmployee && !workshop.is_full"
                 class="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
                 :disabled="registering"
                 @click="subscribe"
@@ -142,7 +142,7 @@ function confirmDelete() {
                 {{ registering ? 'Iscrizione...' : 'Iscriviti' }}
             </Button>
             <Button
-                v-if="isEmployee"
+                v-if="isEmployee && workshop.is_full"
                 variant="outline"
                 class="w-full gap-2"
                 :disabled="joiningWaitingList"
