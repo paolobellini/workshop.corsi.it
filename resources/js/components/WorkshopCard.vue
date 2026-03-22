@@ -16,7 +16,7 @@ import {
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { useRole } from '@/composables/useRole';
-import { destroy, show } from '@/routes/workshops';
+import { destroy, register, show } from '@/routes/workshops';
 import type { Workshop } from '@/types';
 
 const props = defineProps<{
@@ -31,6 +31,16 @@ const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
 const showEditModal = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
+const registering = ref(false);
+
+function subscribe() {
+    registering.value = true;
+    router.post(register.url(props.workshop.id), {}, {
+        onFinish: () => {
+            registering.value = false;
+        },
+    });
+}
 
 function confirmDelete() {
     deleting.value = true;
@@ -114,9 +124,11 @@ function confirmDelete() {
             <Button
                 v-if="isEmployee"
                 class="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
+                :disabled="registering"
+                @click="subscribe"
             >
                 <UserPlus class="size-4" />
-                Iscriviti
+                {{ registering ? 'Iscrizione...' : 'Iscriviti' }}
             </Button>
             <Button v-if="isEmployee" variant="outline" class="w-full gap-2">
                 <Clock class="size-4" />
