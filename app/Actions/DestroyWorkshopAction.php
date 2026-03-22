@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 final class DestroyWorkshopAction
 {
-    public function __construct(private UnregisterUserAction $unregisterUserAction) {}
+    public function __construct(private readonly UnregisterUserAction $unregisterUserAction) {}
 
     public function handle(Workshop $workshop): void
     {
