@@ -7,6 +7,8 @@ export type Workshop = {
     capacity: number;
     available_seats: number;
     is_full: boolean;
+    is_registered?: boolean;
+    is_on_waiting_list?: boolean;
     registrations_count?: number;
     registrations?: Registration[];
     created_at: string;
