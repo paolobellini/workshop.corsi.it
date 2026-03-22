@@ -14,6 +14,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { useRole } from '@/composables/useRole';
 import { destroy, show } from '@/routes/workshops';
 import type { Workshop } from '@/types';
@@ -27,6 +28,7 @@ const { isAdmin, isEmployee } = useRole();
 const startsAt = useDateFormat(props.workshop.starts_at, 'DD/MM/YYYY HH:mm');
 const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
 
+const showEditModal = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
 
@@ -92,7 +94,11 @@ function confirmDelete() {
                 <Link :href="show.url(workshop.id)" class="flex-1">
                     <Button class="w-full">Dettagli</Button>
                 </Link>
-                <Button variant="outline" size="icon">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    @click="showEditModal = true"
+                >
                     <span class="sr-only">Modifica</span>
                     <Pencil class="size-4" />
                 </Button>
@@ -118,6 +124,11 @@ function confirmDelete() {
             </Button>
         </CardFooter>
     </Card>
+
+    <EditWorkshopModal
+        v-model:open="showEditModal"
+        :workshop="workshop"
+    />
 
     <ConfirmDialog
         v-model:open="showDeleteDialog"
