@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
 import { useDateFormat } from '@vueuse/core';
-import { Clock, Pencil, Trash2, UserPlus } from 'lucide-vue-next';
+import { Clock, Pencil, Trash2, UserMinus, UserPlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,8 @@ import {
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { useRole } from '@/composables/useRole';
-import { destroy, register, show } from '@/routes/workshops';
-import { store as waitingListStore } from '@/routes/workshops/waiting-list';
+import { destroy, register, show, unregister } from '@/routes/workshops';
+import { store as waitingListStore, destroy as waitingListDestroy } from '@/routes/workshops/waiting-list';
 import type { Workshop } from '@/types';
 
 const props = defineProps<{
@@ -33,7 +33,9 @@ const showEditModal = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
 const registering = ref(false);
+const unregistering = ref(false);
 const joiningWaitingList = ref(false);
+const leavingWaitingList = ref(false);
 
 function subscribe() {
     registering.value = true;
@@ -44,11 +46,29 @@ function subscribe() {
     });
 }
 
+function cancelSubscription() {
+    unregistering.value = true;
+    router.delete(unregister.url(props.workshop.id), {
+        onFinish: () => {
+            unregistering.value = false;
+        },
+    });
+}
+
 function joinWaitingList() {
     joiningWaitingList.value = true;
     router.post(waitingListStore.url(props.workshop.id), {}, {
         onFinish: () => {
             joiningWaitingList.value = false;
+        },
+    });
+}
+
+function leaveWaitingList() {
+    leavingWaitingList.value = true;
+    router.delete(waitingListDestroy.url(props.workshop.id), {
+        onFinish: () => {
+            leavingWaitingList.value = false;
         },
     });
 }
@@ -133,7 +153,7 @@ function confirmDelete() {
                 </Button>
             </div>
             <Button
-                v-if="isEmployee && !workshop.is_full"
+                v-if="isEmployee && !workshop.is_full && !workshop.is_registered"
                 class="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
                 :disabled="registering"
                 @click="subscribe"
@@ -142,7 +162,17 @@ function confirmDelete() {
                 {{ registering ? 'Iscrizione...' : 'Iscriviti' }}
             </Button>
             <Button
-                v-if="isEmployee && workshop.is_full"
+                v-if="isEmployee && workshop.is_registered"
+                variant="destructive"
+                class="w-full gap-2"
+                :disabled="unregistering"
+                @click="cancelSubscription"
+            >
+                <UserMinus class="size-4" />
+                {{ unregistering ? 'Annullamento...' : 'Annulla iscrizione' }}
+            </Button>
+            <Button
+                v-if="isEmployee && workshop.is_full && !workshop.is_registered && !workshop.is_on_waiting_list"
                 variant="outline"
                 class="w-full gap-2"
                 :disabled="joiningWaitingList"
@@ -150,6 +180,16 @@ function confirmDelete() {
             >
                 <Clock class="size-4" />
                 {{ joiningWaitingList ? 'Aggiunta...' : 'Aggiungi alla coda' }}
+            </Button>
+            <Button
+                v-if="isEmployee && workshop.is_on_waiting_list"
+                variant="destructive"
+                class="w-full gap-2"
+                :disabled="leavingWaitingList"
+                @click="leaveWaitingList"
+            >
+                <X class="size-4" />
+                {{ leavingWaitingList ? 'Rimozione...' : 'Esci dalla coda' }}
             </Button>
         </CardFooter>
     </Card>
