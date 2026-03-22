@@ -3,27 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/workshops';
-import type { BreadcrumbItem } from '@/types';
-
-type Registration = {
-    id: number;
-    name: string;
-    email: string;
-};
-
-type Workshop = {
-    id: number;
-    title: string;
-    description: string | null;
-    starts_at: string;
-    ends_at: string;
-    capacity: number;
-    available_seats: number;
-    is_full: boolean;
-    registrations?: Registration[];
-    created_at: string;
-    updated_at: string;
-};
+import type { BreadcrumbItem, Workshop } from '@/types';
 
 type Props = {
     workshop: { data: Workshop };

@@ -7,38 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/workshops';
-import type { BreadcrumbItem } from '@/types';
-
-type Workshop = {
-    id: number;
-    title: string;
-    description: string | null;
-    starts_at: string;
-    ends_at: string;
-    capacity: number;
-    available_seats: number;
-    is_full: boolean;
-    registrations_count?: number;
-    created_at: string;
-    updated_at: string;
-};
-
-type PaginatedWorkshops = {
-    data: Workshop[];
-    links: { url: string | null; label: string; active: boolean }[];
-    current_page: number;
-    last_page: number;
-};
-
-type Filters = {
-    search?: string;
-    start_date?: string;
-    end_date?: string;
-};
+import type { BreadcrumbItem, Paginated, Workshop, WorkshopFilters } from '@/types';
 
 type Props = {
-    workshops: PaginatedWorkshops;
-    filters: Filters;
+    workshops: Paginated<Workshop>;
+    filters: WorkshopFilters;
 };
 
 const props = defineProps<Props>();
