@@ -17,6 +17,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { useRole } from '@/composables/useRole';
 import { destroy, register, show } from '@/routes/workshops';
+import { store as waitingListStore } from '@/routes/workshops/waiting-list';
 import type { Workshop } from '@/types';
 
 const props = defineProps<{
@@ -32,12 +33,22 @@ const showEditModal = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
 const registering = ref(false);
+const joiningWaitingList = ref(false);
 
 function subscribe() {
     registering.value = true;
     router.post(register.url(props.workshop.id), {}, {
         onFinish: () => {
             registering.value = false;
+        },
+    });
+}
+
+function joinWaitingList() {
+    joiningWaitingList.value = true;
+    router.post(waitingListStore.url(props.workshop.id), {}, {
+        onFinish: () => {
+            joiningWaitingList.value = false;
         },
     });
 }
@@ -130,9 +141,15 @@ function confirmDelete() {
                 <UserPlus class="size-4" />
                 {{ registering ? 'Iscrizione...' : 'Iscriviti' }}
             </Button>
-            <Button v-if="isEmployee" variant="outline" class="w-full gap-2">
+            <Button
+                v-if="isEmployee"
+                variant="outline"
+                class="w-full gap-2"
+                :disabled="joiningWaitingList"
+                @click="joinWaitingList"
+            >
                 <Clock class="size-4" />
-                Aggiungi alla coda
+                {{ joiningWaitingList ? 'Aggiunta...' : 'Aggiungi alla coda' }}
             </Button>
         </CardFooter>
     </Card>
