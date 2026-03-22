@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import CreateWorkshopModal from '@/components/CreateWorkshopModal.vue';
 import StatCard from '@/components/StatCard.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const showCreateModal = ref(false);
 const search = ref(props.filters.search ?? '');
 const startDate = ref(props.filters.start_date ?? '');
 const endDate = ref(props.filters.end_date ?? '');
@@ -59,15 +61,16 @@ function resetFilters() {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-semibold tracking-tight">
-                    Workshops
-                </h1>
+                <h1 class="text-xl font-semibold tracking-tight">Workshops</h1>
                 <Button
                     class="shadow-sm transition-all duration-200 hover:shadow-md"
+                    @click="showCreateModal = true"
                 >
                     Nuovo Workshop
                 </Button>
             </div>
+
+            <CreateWorkshopModal v-model:open="showCreateModal" />
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="—" value="—" />
