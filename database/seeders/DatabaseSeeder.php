@@ -12,6 +12,8 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([RolesAndPermissionsSeeder::class]);
+
         $admin = User::factory()->create([
             'name' => 'Paolo Bellini',
             'email' => 'paolo@bellini.one',
