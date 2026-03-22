@@ -26,3 +26,10 @@ export type WorkshopFilters = {
     start_date?: string;
     end_date?: string;
 };
+
+export type WorkshopStats = {
+    total: number;
+    completed: number;
+    upcoming: number;
+    total_registrations: number;
+};

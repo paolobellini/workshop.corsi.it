@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Enums\Roles;
 use App\Http\Resources\WorkshopResource;
 use App\Models\User;
-use App\Models\WaitingList;
 use App\Models\Workshop;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Http\Request;

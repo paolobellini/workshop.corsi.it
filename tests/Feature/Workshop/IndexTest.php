@@ -22,6 +22,37 @@ test('authenticated users can view workshops', function () {
         ->component('workshops/Index', false)
         ->has('workshops.data', 3)
         ->has('filters')
+        ->has('stats')
+    );
+});
+
+test('it returns correct workshop stats', function () {
+    $user = User::factory()->create();
+
+    $completed = Workshop::factory()->create([
+        'starts_at' => '2025-01-01 09:00:00',
+        'ends_at' => '2025-01-01 17:00:00',
+    ]);
+    Workshop::factory()->create([
+        'starts_at' => '2025-02-01 09:00:00',
+        'ends_at' => '2025-02-01 17:00:00',
+    ]);
+    Workshop::factory()->create([
+        'starts_at' => '2027-06-01 09:00:00',
+        'ends_at' => '2027-06-01 17:00:00',
+    ]);
+
+    $completed->registrations()->attach(User::factory()->count(2)->create());
+
+    $response = $this->actingAs($user)->get(route('workshops.index'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('workshops/Index', false)
+        ->where('stats.total', 3)
+        ->where('stats.completed', 2)
+        ->where('stats.upcoming', 1)
+        ->where('stats.total_registrations', 2)
     );
 });
 

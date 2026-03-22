@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\User;
 use App\Models\Workshop;
+use Illuminate\Support\Facades\Cache;
 
 final class UnregisterUserAction
 {
@@ -15,8 +16,12 @@ final class UnregisterUserAction
     {
         $detached = $workshop->registrations()->detach($user);
 
-        if ($detached > 0 && $user !== null) {
-            $this->promoteAction->handle($workshop);
+        if ($detached > 0) {
+            Cache::tags(['workshops', 'stats'])->flush();
+
+            if ($user !== null) {
+                $this->promoteAction->handle($workshop);
+            }
         }
     }
 }

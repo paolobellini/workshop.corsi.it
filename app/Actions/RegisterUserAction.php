@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Rules\NoWorkshopOverlap;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 final class RegisterUserAction
@@ -19,5 +20,7 @@ final class RegisterUserAction
         )->validate();
 
         $workshop->registrations()->attach($user);
+
+        Cache::tags(['workshops', 'stats'])->flush();
     }
 }

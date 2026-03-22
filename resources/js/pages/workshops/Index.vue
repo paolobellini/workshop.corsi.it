@@ -13,11 +13,13 @@ import type {
     Paginated,
     Workshop,
     WorkshopFilters,
+    WorkshopStats,
 } from '@/types';
 
 type Props = {
     workshops: Paginated<Workshop>;
     filters: WorkshopFilters;
+    stats: WorkshopStats;
 };
 
 const props = defineProps<Props>();
@@ -72,10 +74,13 @@ function resetFilters() {
             <CreateWorkshopModal v-model:open="showCreateModal" />
 
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="—" value="—" />
-                <StatCard title="—" value="—" />
-                <StatCard title="—" value="—" />
-                <StatCard title="—" value="—" />
+                <StatCard title="Totale workshop" :value="stats.total" />
+                <StatCard title="Completati" :value="stats.completed" />
+                <StatCard title="In programma" :value="stats.upcoming" />
+                <StatCard
+                    title="Iscrizioni totali"
+                    :value="stats.total_registrations"
+                />
             </div>
 
             <WorkshopFiltersComponent
