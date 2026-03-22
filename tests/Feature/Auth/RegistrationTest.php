@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Enums\Roles;
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Laravel\Fortify\Features;
 
 beforeEach(function () {
     $this->skipUnlessFortifyFeature(Features::registration());
+    $this->seed(RolesAndPermissionsSeeder::class);
 });
 
 test('registration screen can be rendered', function () {
@@ -24,4 +28,7 @@ test('new users can register', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+
+    $user = User::query()->where('email', 'test@example.com')->firstOrFail();
+    expect($user->hasRole(Roles::Employee))->toBeTrue();
 });
