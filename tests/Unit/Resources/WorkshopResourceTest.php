@@ -2,10 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Enums\Roles;
 use App\Http\Resources\WorkshopResource;
 use App\Models\User;
 use App\Models\Workshop;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Http\Request;
+
+beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+});
 
 it('returns the correct structure', function () {
     $workshop = Workshop::factory()->create();
@@ -31,7 +37,7 @@ it('includes registrations when relation is loaded', function () {
     $workshop->registrations()->attach($users);
     $workshop->load('registrations');
 
-    $resource = (new WorkshopResource($workshop))->toArray(new Request);
+    $resource = new WorkshopResource($workshop)->toArray(new Request);
 
     expect($resource)
         ->toHaveKey('registrations')
@@ -41,7 +47,21 @@ it('includes registrations when relation is loaded', function () {
 it('excludes registrations when relation is not loaded', function () {
     $workshop = Workshop::factory()->create();
 
-    $resource = (new WorkshopResource($workshop))->toArray(new Request);
+    $resource = new WorkshopResource($workshop)->toArray(new Request);
 
     expect($resource)->not->toHaveKey('registrations');
+});
+
+it('includes is_registered and is_on_waiting_list for employee users', function () {
+    $user = User::factory()->create()->assignRole(Roles::Employee);
+    $workshop = Workshop::factory()->create();
+
+    $request = Request::create('/');
+    $request->setUserResolver(fn () => $user);
+
+    $resource = new WorkshopResource($workshop)->toArray($request);
+
+    expect($resource)
+        ->toHaveKey('is_registered', false)
+        ->toHaveKey('is_on_waiting_list', false);
 });

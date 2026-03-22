@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\Roles;
+use App\Models\User;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -34,6 +36,14 @@ final class WorkshopResource extends JsonResource
 
         if ($workshop->relationLoaded('registrations')) {
             $data['registrations'] = UserResource::collection($workshop->registrations);
+        }
+
+        /** @var User|null $user */
+        $user = $request->user();
+
+        if ($user?->hasRole(Roles::Employee)) {
+            $data['is_registered'] = $workshop->registrations()->where('users.id', $user->id)->exists();
+            $data['is_on_waiting_list'] = $workshop->waitingList()->where('user_id', $user->id)->exists();
         }
 
         return $data;

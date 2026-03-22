@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Observers\WorkshopObserver;
 use Carbon\CarbonImmutable;
 use Database\Factories\WorkshopFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $registrations
  * @property-read \Illuminate\Database\Eloquent\Collection<int, WaitingList> $waitingList
  */
+#[ObservedBy(WorkshopObserver::class)]
 final class Workshop extends Model
 {
     /** @use HasFactory<WorkshopFactory> */
@@ -94,6 +97,15 @@ final class Workshop extends Model
     protected function endingBefore(Builder $query, string $date): void
     {
         $query->where('ends_at', '<=', $date.' 23:59:59');
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function today(Builder $query): void
+    {
+        $query->whereDate('starts_at', today());
     }
 
     /**

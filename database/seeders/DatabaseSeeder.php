@@ -6,12 +6,15 @@ namespace Database\Seeders;
 
 use App\Enums\Roles;
 use App\Models\User;
+use App\Models\Workshop;
 use Illuminate\Database\Seeder;
 
 final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([RolesAndPermissionsSeeder::class]);
+
         $admin = User::factory()->create([
             'name' => 'Paolo Bellini',
             'email' => 'paolo@bellini.one',
@@ -25,5 +28,7 @@ final class DatabaseSeeder extends Seeder
         ]);
 
         $employee->assignRole(Roles::Employee);
+
+        Workshop::factory(4)->create();
     }
 }

@@ -25,22 +25,22 @@ const passwordInput = useTemplateRef('passwordInput');
     <div class="space-y-6">
         <Heading
             variant="small"
-            title="Delete account"
-            description="Delete your account and all of its resources"
+            title="Elimina account"
+            description="Elimina il tuo account e tutte le sue risorse"
         />
         <div
             class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
         >
             <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
-                <p class="font-medium">Warning</p>
+                <p class="font-medium">Attenzione</p>
                 <p class="text-sm">
-                    Please proceed with caution, this cannot be undone.
+                    Procedi con cautela, questa azione non può essere annullata.
                 </p>
             </div>
             <Dialog>
                 <DialogTrigger as-child>
                     <Button variant="destructive" data-test="delete-user-button"
-                        >Delete account</Button
+                        >Elimina account</Button
                     >
                 </DialogTrigger>
                 <DialogContent>
@@ -56,14 +56,14 @@ const passwordInput = useTemplateRef('passwordInput');
                     >
                         <DialogHeader class="space-y-3">
                             <DialogTitle
-                                >Are you sure you want to delete your
+                                >Sei sicuro di voler eliminare il tuo
                                 account?</DialogTitle
                             >
                             <DialogDescription>
-                                Once your account is deleted, all of its
-                                resources and data will also be permanently
-                                deleted. Please enter your password to confirm
-                                you would like to permanently delete your
+                                Una volta eliminato il tuo account, tutte le sue
+                                risorse e i dati saranno eliminati
+                                permanentemente. Inserisci la tua password per
+                                confermare l'eliminazione definitiva del tuo
                                 account.
                             </DialogDescription>
                         </DialogHeader>
@@ -92,7 +92,7 @@ const passwordInput = useTemplateRef('passwordInput');
                                         }
                                     "
                                 >
-                                    Cancel
+                                    Annulla
                                 </Button>
                             </DialogClose>
 
@@ -102,7 +102,7 @@ const passwordInput = useTemplateRef('passwordInput');
                                 :disabled="processing"
                                 data-test="confirm-delete-user-button"
                             >
-                                Delete account
+                                Elimina account
                             </Button>
                         </DialogFooter>
                     </Form>

@@ -1,47 +1,31 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Badge } from '@/components/ui/badge';
+import CreateWorkshopModal from '@/components/CreateWorkshopModal.vue';
+import StatCard from '@/components/StatCard.vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import WorkshopCard from '@/components/WorkshopCard.vue';
+import WorkshopFiltersComponent from '@/components/WorkshopFilters.vue';
+import { useRole } from '@/composables/useRole';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { index, show } from '@/routes/workshops';
-import type { BreadcrumbItem } from '@/types';
-
-type Workshop = {
-    id: number;
-    title: string;
-    description: string | null;
-    starts_at: string;
-    ends_at: string;
-    capacity: number;
-    available_seats: number;
-    is_full: boolean;
-    registrations_count?: number;
-    created_at: string;
-    updated_at: string;
-};
-
-type PaginatedWorkshops = {
-    data: Workshop[];
-    links: { url: string | null; label: string; active: boolean }[];
-    current_page: number;
-    last_page: number;
-};
-
-type Filters = {
-    search?: string;
-    start_date?: string;
-    end_date?: string;
-};
+import { index } from '@/routes/workshops';
+import type {
+    BreadcrumbItem,
+    Paginated,
+    Workshop,
+    WorkshopFilters,
+    WorkshopStats,
+} from '@/types';
 
 type Props = {
-    workshops: PaginatedWorkshops;
-    filters: Filters;
+    workshops: Paginated<Workshop>;
+    filters: WorkshopFilters;
+    stats?: WorkshopStats;
 };
 
 const props = defineProps<Props>();
+
+const { isAdmin } = useRole();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -50,6 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const showCreateModal = ref(false);
 const search = ref(props.filters.search ?? '');
 const startDate = ref(props.filters.start_date ?? '');
 const endDate = ref(props.filters.end_date ?? '');
@@ -72,16 +57,6 @@ function resetFilters() {
     endDate.value = '';
     router.get(index.url(), {}, { preserveState: true });
 }
-
-function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
 </script>
 
 <template>
@@ -89,125 +64,53 @@ function formatDate(dateString: string): string {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-semibold tracking-tight">Workshops</h1>
+                <Button
+                    v-if="isAdmin"
+                    class="shadow-sm transition-all duration-200 hover:shadow-md"
+                    @click="showCreateModal = true"
+                >
+                    Nuovo Workshop
+                </Button>
+            </div>
+
+            <CreateWorkshopModal v-if="isAdmin" v-model:open="showCreateModal" />
+
+            <div v-if="isAdmin && stats" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Totale workshop" :value="stats.total" />
+                <StatCard title="Completati" :value="stats.completed" />
+                <StatCard title="In programma" :value="stats.upcoming" />
+                <StatCard
+                    title="Iscrizioni totali"
+                    :value="stats.total_registrations"
+                />
+            </div>
+
+            <WorkshopFiltersComponent
+                v-model:search="search"
+                v-model:start-date="startDate"
+                v-model:end-date="endDate"
+                @filter="applyFilters"
+                @reset="resetFilters"
+            />
+
             <div
-                class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
+                v-if="workshops.data.length > 0"
+                class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="space-y-1">
-                        <Label for="search">Cerca</Label>
-                        <Input
-                            id="search"
-                            v-model="search"
-                            placeholder="Cerca per titolo..."
-                            @keyup.enter="applyFilters"
-                        />
-                    </div>
-                    <div class="space-y-1">
-                        <Label for="start_date">Data inizio</Label>
-                        <Input
-                            id="start_date"
-                            v-model="startDate"
-                            type="date"
-                        />
-                    </div>
-                    <div class="space-y-1">
-                        <Label for="end_date">Data fine</Label>
-                        <Input id="end_date" v-model="endDate" type="date" />
-                    </div>
-                    <div class="flex items-end gap-2">
-                        <Button @click="applyFilters">Filtra</Button>
-                        <Button variant="outline" @click="resetFilters">
-                            Reset
-                        </Button>
-                    </div>
-                </div>
+                <WorkshopCard
+                    v-for="workshop in workshops.data"
+                    :key="workshop.id"
+                    :workshop="workshop"
+                />
             </div>
 
             <div
-                class="overflow-x-auto rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                v-else
+                class="rounded-xl border border-sidebar-border/70 px-4 py-8 text-center text-muted-foreground dark:border-sidebar-border"
             >
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr
-                            class="border-b border-sidebar-border/70 dark:border-sidebar-border"
-                        >
-                            <th class="px-4 py-3 text-left font-medium">
-                                Titolo
-                            </th>
-                            <th class="px-4 py-3 text-left font-medium">
-                                Inizio
-                            </th>
-                            <th class="px-4 py-3 text-left font-medium">
-                                Fine
-                            </th>
-                            <th class="px-4 py-3 text-center font-medium">
-                                Capacita
-                            </th>
-                            <th class="px-4 py-3 text-center font-medium">
-                                Posti disponibili
-                            </th>
-                            <th class="px-4 py-3 text-center font-medium">
-                                Stato
-                            </th>
-                            <th class="px-4 py-3 text-right font-medium">
-                                Azioni
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="workshop in workshops.data"
-                            :key="workshop.id"
-                            class="border-b border-sidebar-border/70 last:border-b-0 dark:border-sidebar-border"
-                        >
-                            <td class="px-4 py-3 font-medium">
-                                {{ workshop.title }}
-                            </td>
-                            <td class="px-4 py-3">
-                                {{ formatDate(workshop.starts_at) }}
-                            </td>
-                            <td class="px-4 py-3">
-                                {{ formatDate(workshop.ends_at) }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                {{ workshop.capacity }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                {{ workshop.available_seats }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <Badge
-                                    :variant="
-                                        workshop.is_full
-                                            ? 'destructive'
-                                            : 'default'
-                                    "
-                                >
-                                    {{
-                                        workshop.is_full
-                                            ? 'Completo'
-                                            : 'Disponibile'
-                                    }}
-                                </Badge>
-                            </td>
-                            <td class="px-4 py-3 text-right">
-                                <Link :href="show.url(workshop.id)">
-                                    <Button variant="outline" size="sm">
-                                        Dettagli
-                                    </Button>
-                                </Link>
-                            </td>
-                        </tr>
-                        <tr v-if="workshops.data.length === 0">
-                            <td
-                                colspan="7"
-                                class="px-4 py-8 text-center text-muted-foreground"
-                            >
-                                Nessun workshop trovato.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                Nessun workshop trovato.
             </div>
 
             <div
@@ -228,12 +131,7 @@ function formatDate(dateString: string): string {
                             <span v-html="link.label" />
                         </Button>
                     </Link>
-                    <Button
-                        v-else
-                        variant="outline"
-                        size="sm"
-                        disabled
-                    >
+                    <Button v-else variant="outline" size="sm" disabled>
                         <span v-html="link.label" />
                     </Button>
                 </template>

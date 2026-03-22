@@ -1,29 +1,11 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import { useDateFormat } from '@vueuse/core';
+import { ArrowLeft } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/workshops';
-import type { BreadcrumbItem } from '@/types';
-
-type Registration = {
-    id: number;
-    name: string;
-    email: string;
-};
-
-type Workshop = {
-    id: number;
-    title: string;
-    description: string | null;
-    starts_at: string;
-    ends_at: string;
-    capacity: number;
-    available_seats: number;
-    is_full: boolean;
-    registrations?: Registration[];
-    created_at: string;
-    updated_at: string;
-};
+import type { BreadcrumbItem, Workshop } from '@/types';
 
 type Props = {
     workshop: { data: Workshop };
@@ -42,15 +24,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
+const startsAt = useDateFormat(props.workshop.data.starts_at, 'DD/MM/YYYY HH:mm');
+const endsAt = useDateFormat(props.workshop.data.ends_at, 'DD/MM/YYYY HH:mm');
 </script>
 
 <template>
@@ -58,11 +33,23 @@ function formatDate(dateString: string): string {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4">
+            <Link
+                :href="index()"
+                class="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+                <ArrowLeft class="size-4" />
+                Torna ai workshop
+            </Link>
+
+            <h1 class="text-xl font-semibold tracking-tight">
+                {{ workshop.data.title }}
+            </h1>
+
             <div
                 class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
             >
                 <div class="mb-4 flex items-start justify-between">
-                    <h2 class="text-xl font-semibold tracking-tight">
+                    <h2 class="text-lg font-semibold tracking-tight">
                         {{ workshop.data.title }}
                     </h2>
                     <Badge
@@ -85,13 +72,13 @@ function formatDate(dateString: string): string {
                     <div>
                         <dt class="text-sm text-muted-foreground">Inizio</dt>
                         <dd class="font-medium">
-                            {{ formatDate(workshop.data.starts_at) }}
+                            {{ startsAt }}
                         </dd>
                     </div>
                     <div>
                         <dt class="text-sm text-muted-foreground">Fine</dt>
                         <dd class="font-medium">
-                            {{ formatDate(workshop.data.ends_at) }}
+                            {{ endsAt }}
                         </dd>
                     </div>
                     <div>
