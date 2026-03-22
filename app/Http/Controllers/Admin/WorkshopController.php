@@ -12,8 +12,10 @@ use App\Http\Requests\Admin\IndexWorkshopRequest;
 use App\Http\Requests\Admin\StoreWorkshopRequest;
 use App\Http\Requests\Admin\UpdateWorkshopRequest;
 use App\Http\Resources\WorkshopResource;
+use App\Models\User;
 use App\Models\Workshop;
 use Carbon\CarbonImmutable;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +24,7 @@ use Inertia\Response;
 
 final class WorkshopController extends Controller
 {
-    public function index(IndexWorkshopRequest $request): Response
+    public function index(IndexWorkshopRequest $request, #[CurrentUser] User $user): Response
     {
         $workshops = Workshop::query()
             ->when($request->validated('search'), fn ($query, $search) => $query->search($search))
@@ -36,7 +38,7 @@ final class WorkshopController extends Controller
         return Inertia::render('workshops/Index', [
             'workshops' => WorkshopResource::collection($workshops),
             'filters' => $request->only(['search', 'start_date', 'end_date']),
-            'stats' => $this->stats(),
+            ...($user->isAdmin() ? ['stats' => $this->stats()] : []),
         ]);
     }
 

@@ -6,6 +6,7 @@ import StatCard from '@/components/StatCard.vue';
 import { Button } from '@/components/ui/button';
 import WorkshopCard from '@/components/WorkshopCard.vue';
 import WorkshopFiltersComponent from '@/components/WorkshopFilters.vue';
+import { useRole } from '@/composables/useRole';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index } from '@/routes/workshops';
 import type {
@@ -19,10 +20,12 @@ import type {
 type Props = {
     workshops: Paginated<Workshop>;
     filters: WorkshopFilters;
-    stats: WorkshopStats;
+    stats?: WorkshopStats;
 };
 
 const props = defineProps<Props>();
+
+const { isAdmin } = useRole();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -64,6 +67,7 @@ function resetFilters() {
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-semibold tracking-tight">Workshops</h1>
                 <Button
+                    v-if="isAdmin"
                     class="shadow-sm transition-all duration-200 hover:shadow-md"
                     @click="showCreateModal = true"
                 >
@@ -71,9 +75,9 @@ function resetFilters() {
                 </Button>
             </div>
 
-            <CreateWorkshopModal v-model:open="showCreateModal" />
+            <CreateWorkshopModal v-if="isAdmin" v-model:open="showCreateModal" />
 
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div v-if="isAdmin && stats" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Totale workshop" :value="stats.total" />
                 <StatCard title="Completati" :value="stats.completed" />
                 <StatCard title="In programma" :value="stats.upcoming" />

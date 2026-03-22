@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Enums\Roles;
 use App\Models\User;
 use App\Models\Workshop;
+use Database\Seeders\RolesAndPermissionsSeeder;
+
+beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+});
 
 test('guests cannot view workshops', function () {
     $response = $this->get(route('workshops.index'));
@@ -12,7 +18,7 @@ test('guests cannot view workshops', function () {
 });
 
 test('authenticated users can view workshops', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create()->assignRole(Roles::Employee);
     Workshop::factory()->count(3)->create();
 
     $response = $this->actingAs($user)->get(route('workshops.index'));
@@ -22,12 +28,12 @@ test('authenticated users can view workshops', function () {
         ->component('workshops/Index', false)
         ->has('workshops.data', 3)
         ->has('filters')
-        ->has('stats')
+        ->missing('stats')
     );
 });
 
-test('it returns correct workshop stats', function () {
-    $user = User::factory()->create();
+test('admins can view workshop stats', function () {
+    $user = User::factory()->create()->assignRole(Roles::Admin);
 
     $completed = Workshop::factory()->create([
         'starts_at' => '2025-01-01 09:00:00',
@@ -53,6 +59,19 @@ test('it returns correct workshop stats', function () {
         ->where('stats.completed', 2)
         ->where('stats.upcoming', 1)
         ->where('stats.total_registrations', 2)
+    );
+});
+
+test('employees cannot view workshop stats', function () {
+    $user = User::factory()->create()->assignRole(Roles::Employee);
+    Workshop::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('workshops.index'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('workshops/Index', false)
+        ->missing('stats')
     );
 });
 

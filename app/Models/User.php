@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -70,5 +71,10 @@ final class User extends Authenticatable
     public function waitingLists(): HasMany
     {
         return $this->hasMany(WaitingList::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(Roles::Admin);
     }
 }

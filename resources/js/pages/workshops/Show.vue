@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/workshops';
@@ -38,11 +39,23 @@ function formatDate(dateString: string): string {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-4">
+            <Link
+                :href="index()"
+                class="flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+                <ArrowLeft class="size-4" />
+                Torna ai workshop
+            </Link>
+
+            <h1 class="text-xl font-semibold tracking-tight">
+                {{ workshop.data.title }}
+            </h1>
+
             <div
                 class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
             >
                 <div class="mb-4 flex items-start justify-between">
-                    <h2 class="text-xl font-semibold tracking-tight">
+                    <h2 class="text-lg font-semibold tracking-tight">
                         {{ workshop.data.title }}
                     </h2>
                     <Badge
