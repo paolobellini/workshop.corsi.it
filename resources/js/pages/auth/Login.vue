@@ -22,10 +22,10 @@ defineProps<{
 
 <template>
     <AuthBase
-        title="Log in to your account"
-        description="Enter your email and password below to log in"
+        title="Accedi al tuo account"
+        description="Inserisci email e password per accedere"
     >
-        <Head title="Log in" />
+        <Head title="Accedi" />
 
         <div
             v-if="status"
@@ -42,7 +42,7 @@ defineProps<{
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">Indirizzo email</Label>
                     <Input
                         id="email"
                         type="email"
@@ -65,7 +65,7 @@ defineProps<{
                             class="text-sm"
                             :tabindex="5"
                         >
-                            Forgot password?
+                            Password dimenticata?
                         </TextLink>
                     </div>
                     <PasswordInput
@@ -82,7 +82,7 @@ defineProps<{
                 <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
-                        <span>Remember me</span>
+                        <span>Ricordami</span>
                     </Label>
                 </div>
 
@@ -94,7 +94,7 @@ defineProps<{
                     data-test="login-button"
                 >
                     <Spinner v-if="processing" />
-                    Log in
+                    Accedi
                 </Button>
             </div>
 
@@ -102,8 +102,8 @@ defineProps<{
                 class="text-center text-sm text-muted-foreground"
                 v-if="canRegister"
             >
-                Don't have an account?
-                <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
+                Non hai un account?
+                <TextLink :href="register()" :tabindex="5">Registrati</TextLink>
             </div>
         </Form>
     </AuthBase>

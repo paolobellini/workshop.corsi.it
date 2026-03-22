@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useDateFormat } from '@vueuse/core';
 import { ArrowLeft } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -23,15 +24,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
+const startsAt = useDateFormat(props.workshop.data.starts_at, 'DD/MM/YYYY HH:mm');
+const endsAt = useDateFormat(props.workshop.data.ends_at, 'DD/MM/YYYY HH:mm');
 </script>
 
 <template>
@@ -78,13 +72,13 @@ function formatDate(dateString: string): string {
                     <div>
                         <dt class="text-sm text-muted-foreground">Inizio</dt>
                         <dd class="font-medium">
-                            {{ formatDate(workshop.data.starts_at) }}
+                            {{ startsAt }}
                         </dd>
                     </div>
                     <div>
                         <dt class="text-sm text-muted-foreground">Fine</dt>
                         <dd class="font-medium">
-                            {{ formatDate(workshop.data.ends_at) }}
+                            {{ endsAt }}
                         </dd>
                     </div>
                     <div>
