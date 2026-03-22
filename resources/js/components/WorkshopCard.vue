@@ -3,6 +3,8 @@ import { Link, router } from '@inertiajs/vue3';
 import { useDateFormat } from '@vueuse/core';
 import { Clock, Pencil, Trash2, UserMinus, UserPlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,8 +15,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { useRole } from '@/composables/useRole';
 import { destroy, register, show, unregister } from '@/routes/workshops';
 import { store as waitingListStore, destroy as waitingListDestroy } from '@/routes/workshops/waiting-list';

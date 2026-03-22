@@ -4,9 +4,8 @@ import { ref } from 'vue';
 import CreateWorkshopModal from '@/components/CreateWorkshopModal.vue';
 import StatCard from '@/components/StatCard.vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import WorkshopCard from '@/components/WorkshopCard.vue';
+import WorkshopFiltersComponent from '@/components/WorkshopFilters.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index } from '@/routes/workshops';
 import type {
@@ -79,39 +78,13 @@ function resetFilters() {
                 <StatCard title="—" value="—" />
             </div>
 
-            <div
-                class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 shadow-sm dark:border-sidebar-border"
-            >
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="space-y-1">
-                        <Label for="search">Cerca</Label>
-                        <Input
-                            id="search"
-                            v-model="search"
-                            placeholder="Cerca per titolo..."
-                            @keyup.enter="applyFilters"
-                        />
-                    </div>
-                    <div class="space-y-1">
-                        <Label for="start_date">Data inizio</Label>
-                        <Input
-                            id="start_date"
-                            v-model="startDate"
-                            type="date"
-                        />
-                    </div>
-                    <div class="space-y-1">
-                        <Label for="end_date">Data fine</Label>
-                        <Input id="end_date" v-model="endDate" type="date" />
-                    </div>
-                    <div class="flex items-end gap-2">
-                        <Button @click="applyFilters">Filtra</Button>
-                        <Button variant="outline" @click="resetFilters">
-                            Reset
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            <WorkshopFiltersComponent
+                v-model:search="search"
+                v-model:start-date="startDate"
+                v-model:end-date="endDate"
+                @filter="applyFilters"
+                @reset="resetFilters"
+            />
 
             <div
                 v-if="workshops.data.length > 0"
