@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { useDateFormat } from '@vueuse/core';
+import { Clock, Pencil, Trash2, UserPlus } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -68,10 +69,30 @@ const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
             </dl>
         </CardContent>
 
-        <CardFooter>
-            <Link :href="show.url(workshop.id)" class="w-full">
-                <Button class="w-full">Dettagli</Button>
-            </Link>
+        <CardFooter class="flex-col gap-2">
+            <div class="flex w-full gap-2">
+                <Link :href="show.url(workshop.id)" class="flex-1">
+                    <Button class="w-full">Dettagli</Button>
+                </Link>
+                <Button variant="outline" size="icon">
+                    <span class="sr-only">Modifica</span>
+                    <Pencil class="size-4" />
+                </Button>
+                <Button variant="outline" size="icon">
+                    <span class="sr-only">Elimina</span>
+                    <Trash2 class="size-4" />
+                </Button>
+            </div>
+            <Button
+                class="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+                <UserPlus class="size-4" />
+                Iscriviti
+            </Button>
+            <Button variant="outline" class="w-full gap-2">
+                <Clock class="size-4" />
+                Aggiungi alla coda
+            </Button>
         </CardFooter>
     </Card>
 </template>
