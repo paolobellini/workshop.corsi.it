@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { useDateFormat } from '@vueuse/core';
 import { Clock, Pencil, Trash2, UserMinus, UserPlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import EditWorkshopModal from '@/components/EditWorkshopModal.vue';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,11 @@ const leavingWaitingList = ref(false);
 function subscribe() {
     registering.value = true;
     router.post(register.url(props.workshop.id), {}, {
+        onError: (errors) => {
+            if (errors.workshop) {
+                toast.error(errors.workshop);
+            }
+        },
         onFinish: () => {
             registering.value = false;
         },
@@ -58,6 +64,11 @@ function cancelSubscription() {
 function joinWaitingList() {
     joiningWaitingList.value = true;
     router.post(waitingListStore.url(props.workshop.id), {}, {
+        onError: (errors) => {
+            if (errors.workshop) {
+                toast.error(errors.workshop);
+            }
+        },
         onFinish: () => {
             joiningWaitingList.value = false;
         },
