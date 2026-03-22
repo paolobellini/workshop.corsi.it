@@ -14,12 +14,15 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { useRole } from '@/composables/useRole';
 import { destroy, show } from '@/routes/workshops';
 import type { Workshop } from '@/types';
 
 const props = defineProps<{
     workshop: Workshop;
 }>();
+
+const { isAdmin, isEmployee } = useRole();
 
 const startsAt = useDateFormat(props.workshop.starts_at, 'DD/MM/YYYY HH:mm');
 const endsAt = useDateFormat(props.workshop.ends_at, 'DD/MM/YYYY HH:mm');
@@ -85,7 +88,7 @@ function confirmDelete() {
         </CardContent>
 
         <CardFooter class="flex-col gap-2">
-            <div class="flex w-full gap-2">
+            <div v-if="isAdmin" class="flex w-full gap-2">
                 <Link :href="show.url(workshop.id)" class="flex-1">
                     <Button class="w-full">Dettagli</Button>
                 </Link>
@@ -103,12 +106,13 @@ function confirmDelete() {
                 </Button>
             </div>
             <Button
+                v-if="isEmployee"
                 class="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
             >
                 <UserPlus class="size-4" />
                 Iscriviti
             </Button>
-            <Button variant="outline" class="w-full gap-2">
+            <Button v-if="isEmployee" variant="outline" class="w-full gap-2">
                 <Clock class="size-4" />
                 Aggiungi alla coda
             </Button>
