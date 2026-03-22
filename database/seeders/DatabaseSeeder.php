@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Enums\Roles;
 use App\Models\User;
+use App\Models\Workshop;
 use Illuminate\Database\Seeder;
 
 final class DatabaseSeeder extends Seeder
@@ -27,5 +28,7 @@ final class DatabaseSeeder extends Seeder
         ]);
 
         $employee->assignRole(Roles::Employee);
+
+        Workshop::factory(4)->create();
     }
 }
